@@ -3,6 +3,7 @@ package ca.ualberta.cs.lonelytwitter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -30,6 +31,12 @@ public class LonelyTwitterActivity extends Activity {
         return adapter;
     }
 
+
+    private ImageButton pictureButton;
+    private Bitmap thumbnail;
+    static final int REQUEST_CAPTURING_IMAGE = 1234;
+
+
     /**
      * Called when the activity is first created.
      */
@@ -43,7 +50,14 @@ public class LonelyTwitterActivity extends Activity {
 
 
 	// http://developer.android.com/training/camera/photobasics.html
-
+        pictureButton = (ImageButton)findViewById(R.id.pictureButton);
+        pictureButton.setOnClickListener((new View.OnClickListener(){
+            public void onClick(View view){
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (intent.resolveActivity(getPackageManager())!=null)
+                    startActivityForResult(intent,REQUEST_CAPTURING_IMAGE);
+            }
+        }));
 
         saveButton = (Button) findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -94,5 +108,12 @@ public class LonelyTwitterActivity extends Activity {
     }
 
 	// http://developer.android.com/training/camera/photobasics.html
-
+    @Override
+    protected void onActiviyResult(int requestCode, int resultCode, Intent intent){
+        if (requestCode == REQUEST_CAPTURING_IMAGE  &&  requestCode==RESULT_OK){
+            Bundle extras = intent.getExtras();
+            thumbnail = (Bitmap)extras.get("data");
+            pictureButton.setImageBitmap(thumbnail);
+        }
+    }
 }
